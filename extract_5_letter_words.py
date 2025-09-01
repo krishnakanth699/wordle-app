@@ -2,7 +2,7 @@
 # Usage: Run in the same directory as words.txt and validWords.js
 
 input_file = 'words.txt'
-output_file = 'wordleapp/validWords.js'
+output_file = 'validWords.js'
 
 
 import re
@@ -19,3 +19,4 @@ with open(output_file, 'w') as out:
     out.write('\n];\n')
 
 print(f"Extracted {len(words)} 5-letter words to {output_file}")
+
