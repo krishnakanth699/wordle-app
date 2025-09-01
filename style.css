@@ -1,0 +1,79 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    text-align: center;
+}
+#game {
+    margin: 30px auto;
+    width: 300px;
+}
+#grid {
+    display: grid;
+    grid-template-columns: repeat(5, 40px);
+    grid-gap: 5px;
+    margin-bottom: 15px;
+    justify-content: flex-start;
+    padding-left: 30px;
+}
+.cell {
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border: 2px solid #ccc;
+    font-size: 1.5em;
+    line-height: 40px;
+    text-transform: uppercase;
+}
+.correct {
+    background: #6aaa64;
+    color: #fff;
+}
+.present {
+    background: #c9b458;
+    color: #fff;
+}
+.absent {
+    background: #787c7e;
+    color: #fff;
+}
+#message {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.keyboard-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px auto;
+    gap: 5px;
+}
+.key {
+    width: 30px;
+    height: 40px;
+    background: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none;
+    margin: 2px;
+    transition: background 0.2s, color 0.2s;
+}
+.key.special {
+    width: 60px;
+}
+.key.correct {
+    background: #6aaa64 !important;
+    color: #fff !important;
+}
+.key.present {
+    background: #c9b458 !important;
+    color: #fff !important;
+}
+.key.absent {
+    background: #787c7e !important;
+    color: #fff !important;
+}
