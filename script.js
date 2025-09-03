@@ -13,6 +13,33 @@ const guessInput = document.getElementById("guess");
 const submitBtn = document.getElementById("submit");
 const message = document.getElementById("message");
 const keyboard = document.getElementById("keyboard");
+// Add timer element
+let timerDiv = document.getElementById("timer");
+
+// Timer variables
+let startTime = null;
+let endTime = null;
+let timerInterval = null;
+function getElapsedTime() {
+    if (!startTime) return 0;
+    if (endTime) return Math.floor((endTime - startTime) / 1000);
+    return Math.floor((Date.now() - startTime) / 1000);
+}
+function formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}m ${sec < 10 ? "0" : ""}${sec}s`;
+}
+function startLiveTimer() {
+    timerDiv.textContent = "Time: 0m 00s";
+    timerInterval = setInterval(() => {
+        timerDiv.textContent = `Time: ${formatTime(getElapsedTime())}`;
+    }, 1000);
+}
+function stopLiveTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerDiv.textContent = `Final Time: ${formatTime(getElapsedTime())}`;
+}
 
 function renderGrid() {
     grid.innerHTML = "";
@@ -51,7 +78,12 @@ function checkGuess(guess) {
 }
 
 submitBtn.addEventListener("click", () => {
+    if (!startTime) {
+        startTime = Date.now();
+        startLiveTimer();
+    }
     console.log("First valid word:", VALID_WORDS[0]);
+    console.log("Target word:", WORD);
     let guess = guessInput.value.toUpperCase();
     if (guess.length !== 5) {
         message.textContent = "Enter a 5-letter word.";
@@ -67,10 +99,16 @@ submitBtn.addEventListener("click", () => {
     renderGrid();
     guessInput.value = "";
     if (guess === WORD) {
-        message.textContent = "Congratulations! You guessed it!";
+        endTime = Date.now();
+        stopLiveTimer();
+        const elapsed = getElapsedTime();
+        message.textContent = `Congratulations! You guessed it! Time taken: ${formatTime(elapsed)}`;
         submitBtn.disabled = true;
     } else if (tries.length === MAX_TRIES) {
-        message.textContent = `Game over! The word was ${WORD}.`;
+        endTime = Date.now();
+        stopLiveTimer();
+        const elapsed = getElapsedTime();
+        message.textContent = `Game over! The word was ${WORD}. Time taken: ${formatTime(elapsed)}`;
         submitBtn.disabled = true;
     } else {
         message.textContent = "";
@@ -154,3 +192,8 @@ function handleKey(key) {
 
 renderGrid();
 renderKeyboard();
+// Reset timer when page reloads
+startTime = null;
+endTime = null;
+if (timerInterval) clearInterval(timerInterval);
+timerDiv.textContent = "Time: 0m 00s";
