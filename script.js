@@ -2,11 +2,14 @@
 // Import valid words from external file
 import { VALID_WORDS } from "./validWords.js";
 
-console.log("First valid word:", VALID_WORDS[0]);
 
-const WORD = VALID_WORDS[Math.floor(Math.random() * VALID_WORDS.length)];
+const MAX_ROUNDS = 5;
 const MAX_TRIES = 6;
+let currentRound = 1;
 let tries = [];
+let roundResults = [];
+let WORD = VALID_WORDS[Math.floor(Math.random() * VALID_WORDS.length)];
+console.log("First valid word:", WORD);
 
 const grid = document.getElementById("grid");
 const guessInput = document.getElementById("guess");
@@ -15,6 +18,10 @@ const message = document.getElementById("message");
 const keyboard = document.getElementById("keyboard");
 // Add timer element
 let timerDiv = document.getElementById("timer");
+let roundResultsDiv = document.getElementById("round-results");
+let summaryResultsDiv = document.getElementById("summary-results");
+// Hide summary div initially
+summaryResultsDiv.style.display = "none";
 
 // Timer variables
 let startTime = null;
@@ -77,13 +84,12 @@ function checkGuess(guess) {
     return result;
 }
 
+
 submitBtn.addEventListener("click", () => {
     if (!startTime) {
         startTime = Date.now();
         startLiveTimer();
     }
-    console.log("First valid word:", VALID_WORDS[0]);
-    console.log("Target word:", WORD);
     let guess = guessInput.value.toUpperCase();
     if (guess.length !== 5) {
         message.textContent = "Enter a 5-letter word.";
@@ -98,22 +104,86 @@ submitBtn.addEventListener("click", () => {
     tries.push({ guess, result });
     renderGrid();
     guessInput.value = "";
-    if (guess === WORD) {
+    if (guess === WORD || tries.length === MAX_TRIES) {
         endTime = Date.now();
         stopLiveTimer();
         const elapsed = getElapsedTime();
-        message.textContent = `Congratulations! You guessed it! Time taken: ${formatTime(elapsed)}`;
-        submitBtn.disabled = true;
-    } else if (tries.length === MAX_TRIES) {
-        endTime = Date.now();
-        stopLiveTimer();
-        const elapsed = getElapsedTime();
-        message.textContent = `Game over! The word was ${WORD}. Time taken: ${formatTime(elapsed)}`;
-        submitBtn.disabled = true;
+        let success = guess === WORD;
+        let attempts = tries.length;
+        let roundInfo = {
+            round: currentRound,
+            word: WORD,
+            success,
+            attempts,
+            time: elapsed
+        };
+        roundResults.push(roundInfo);
+        displayRoundResults();
+        if (currentRound < MAX_ROUNDS) {
+            message.textContent = success
+                ? `Round ${currentRound} complete! You guessed it in ${attempts} attempts and ${formatTime(elapsed)}.`
+                : `Round ${currentRound} over! The word was ${WORD}. Attempts: ${attempts}, Time: ${formatTime(elapsed)}`;
+            submitBtn.disabled = true;
+            setTimeout(() => {
+                nextRound();
+            }, 2000);
+        } else {
+            message.textContent = success
+                ? `Game finished! You guessed the last word in ${attempts} attempts and ${formatTime(elapsed)}.`
+                : `Game finished! The last word was ${WORD}. Attempts: ${attempts}, Time: ${formatTime(elapsed)}`;
+            submitBtn.disabled = true;
+            roundResultsDiv.innerHTML = "";
+            displaySummaryResults();
+        }
     } else {
         message.textContent = "";
     }
 });
+function displayRoundResults() {
+    let html = `<h3>Round Results</h3><ul>`;
+    roundResults.forEach(r => {
+        html += `<li>Round ${r.round}: Word: <b>${r.word}</b> | Attempts: ${r.attempts} | Time: ${formatTime(r.time)} | ${r.success ? "Guessed" : "Not Guessed"}</li>`;
+    });
+    html += `</ul>`;
+    roundResultsDiv.innerHTML = html;
+}
+
+function displaySummaryResults() {
+    // Only show summary if all rounds are completed
+    if (currentRound < MAX_ROUNDS) {
+        summaryResultsDiv.innerHTML = "";
+        summaryResultsDiv.style.display = "none";
+        return;
+    }
+    let html = `<h2>Game Summary</h2><ul>`;
+    roundResults.forEach(r => {
+        html += `<li>Round ${r.round}: Word: <b>${r.word}</b> | Attempts: ${r.attempts} | Time: ${formatTime(r.time)} | ${r.success ? "Guessed" : "Not Guessed"}</li>`;
+    });
+    html += `</ul>`;
+    let totalTime = roundResults.reduce((sum, r) => sum + r.time, 0);
+    let totalAttempts = roundResults.reduce((sum, r) => sum + r.attempts, 0);
+    html += `<p><b>Total Attempts:</b> ${totalAttempts} <br><b>Total Time:</b> ${formatTime(totalTime)}</p>`;
+    summaryResultsDiv.innerHTML = html;
+    summaryResultsDiv.style.display = "block";
+}
+
+function nextRound() {
+    currentRound++;
+    if (currentRound > MAX_ROUNDS) return;
+    tries = [];
+    WORD = VALID_WORDS[Math.floor(Math.random() * VALID_WORDS.length)];
+    console.log("First valid word:", WORD);
+    startTime = null;
+    endTime = null;
+    if (timerInterval) clearInterval(timerInterval);
+    timerDiv.textContent = "Time: 0m 00s";
+    renderGrid();
+    renderKeyboard();
+    message.textContent = `Round ${currentRound} - Start guessing!`;
+    submitBtn.disabled = false;
+    guessInput.value = "";
+    guessInput.focus();
+}
 
 guessInput.addEventListener("input", () => {
     // Remove any non-alphabetic characters
@@ -190,10 +260,15 @@ function handleKey(key) {
     guessInput.focus();
 }
 
+
+
+
 renderGrid();
 renderKeyboard();
-// Reset timer when page reloads
 startTime = null;
 endTime = null;
 if (timerInterval) clearInterval(timerInterval);
 timerDiv.textContent = "Time: 0m 00s";
+message.textContent = `Round 1 - Start guessing!`;
+summaryResultsDiv.innerHTML = "";
+summaryResultsDiv.style.display = "none";
