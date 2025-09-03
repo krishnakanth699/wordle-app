@@ -1,3 +1,10 @@
+/* Timer styles */
+#timer {
+    font-size: 1.7em;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 20px;
+}
 body {
     font-family: Arial, sans-serif;
     background: #f4f4f4;
