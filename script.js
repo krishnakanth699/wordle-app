@@ -3,19 +3,23 @@
 import { VALID_WORDS } from "./validWords.js";
 
 
-const MAX_ROUNDS = 5;
+
+let MAX_ROUNDS = 5;
 const MAX_TRIES = 6;
 let currentRound = 1;
 let tries = [];
 let roundResults = [];
-let WORD = VALID_WORDS[Math.floor(Math.random() * VALID_WORDS.length)];
-console.log("First valid word:", WORD);
+let WORD = "";
+let gameStarted = false;
 
 const grid = document.getElementById("grid");
 const guessInput = document.getElementById("guess");
 const submitBtn = document.getElementById("submit");
 const message = document.getElementById("message");
 const keyboard = document.getElementById("keyboard");
+const roundSelectorDiv = document.getElementById("round-selector");
+const numRoundsSelect = document.getElementById("numRounds");
+const startGameBtn = document.getElementById("startGame");
 // Add timer element
 let timerDiv = document.getElementById("timer");
 let roundResultsDiv = document.getElementById("round-results");
@@ -63,6 +67,7 @@ function renderGrid() {
 }
 
 function checkGuess(guess) {
+    console.log("First valid word:", WORD);
     let result = Array(5).fill("absent");
     let wordArr = WORD.split("");
     let guessArr = guess.split("");
@@ -85,7 +90,9 @@ function checkGuess(guess) {
 }
 
 
+
 submitBtn.addEventListener("click", () => {
+    if (!gameStarted) return;
     if (!startTime) {
         startTime = Date.now();
         startLiveTimer();
@@ -263,12 +270,36 @@ function handleKey(key) {
 
 
 
-renderGrid();
-renderKeyboard();
-startTime = null;
-endTime = null;
-if (timerInterval) clearInterval(timerInterval);
-timerDiv.textContent = "Time: 0m 00s";
-message.textContent = `Round 1 - Start guessing!`;
-summaryResultsDiv.innerHTML = "";
-summaryResultsDiv.style.display = "none";
+
+// Game initialization
+function initializeGame() {
+    MAX_ROUNDS = parseInt(numRoundsSelect.value);
+    currentRound = 1;
+    tries = [];
+    roundResults = [];
+    WORD = VALID_WORDS[Math.floor(Math.random() * VALID_WORDS.length)];
+    console.log("First valid word:", WORD);
+    gameStarted = true;
+    roundSelectorDiv.style.display = "none";
+    renderGrid();
+    renderKeyboard();
+    startTime = null;
+    endTime = null;
+    if (timerInterval) clearInterval(timerInterval);
+    timerDiv.textContent = "Time: 0m 00s";
+    message.textContent = `Round 1 - Start guessing!`;
+    summaryResultsDiv.innerHTML = "";
+    summaryResultsDiv.style.display = "none";
+    submitBtn.disabled = false;
+    guessInput.value = "";
+    guessInput.focus();
+}
+
+startGameBtn.addEventListener("click", initializeGame);
+
+// Hide game area until game starts
+document.getElementById("game").style.display = "none";
+
+startGameBtn.addEventListener("click", () => {
+    document.getElementById("game").style.display = "block";
+});

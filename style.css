@@ -1,3 +1,43 @@
+#round-selector .round-label {
+    font-family: Arial, sans-serif;
+    font-size: 1.3em;
+    font-weight: 600;
+}
+#round-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-family: inherit;
+}
+#round-selector label {
+    font-size: 1.1em;
+    font-weight: 500;
+    margin-right: 5px;
+}
+#numRounds {
+    font-size: 1em;
+    padding: 4px 8px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    background: #fff;
+    color: #222;
+}
+#startGame {
+    font-size: 1em;
+    padding: 4px 14px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    background: #fff;
+    color: #222;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+#startGame:active {
+    background: #f4f4f4;
+}
 /* Timer styles */
 #timer {
     font-size: 1.7em;
