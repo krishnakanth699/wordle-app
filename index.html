@@ -8,6 +8,17 @@
 </head>
 <body>
     <h1>Wordle Clone by 🦆</h1>
+    <div id="round-selector" style="margin-bottom:20px; display:flex; flex-direction:column; align-items:center; gap:10px;">
+    <label for="numRounds" class="round-label">Select number of rounds</label>
+        <select id="numRounds">
+            <option value="1" selected>1</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="7">7</option>
+            <option value="10">10</option>
+        </select>
+        <button id="startGame">Start Game</button>
+    </div>
     <div id="game">
         <div id="timer"></div>
         <div id="grid"></div>
